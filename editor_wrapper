@@ -1,0 +1,40 @@
+#!/bin/bash
+OPTIND=1
+
+sudo_mode=false
+file_path=none
+file_editor=none
+
+print_help () {
+  echo "Usage: editor_wrapper -p <file> <OPTIONS>
+
+Options:
+ -p       path to the file to edit
+ -s       run editor with sudo
+ -h       show help (this message)
+"
+}
+
+while getopts "h?sp:" opt; do
+  case $opt in
+    s)
+      sudo_mode="true"
+      ;;
+    p)
+      file_path=$OPTARG
+      ;;
+    h|\?)
+      print_help
+      exit 0
+      ;;
+  esac
+done
+
+if [[ $file_path == none ]]; then
+  print_help; exit 1
+fi
+
+read -p "Editor: " file_editor
+
+[[ $sudo_mode == true ]] && $sudo_mode $file_editor $file_path
+[[ $sudo_mode == false ]] && $file_editor $file_path
